@@ -3,12 +3,12 @@
 public class TankMovement : MonoBehaviour
 {
     public int m_PlayerNumber = 1;         
-    public float m_Speed = 12f;            
-    public float m_TurnSpeed = 180f;       
+    public float m_Speed = 3f;            
+    public float m_TurnSpeed = 90f;       
     public AudioSource m_MovementAudio;    
     public AudioClip m_EngineIdling;       
     public AudioClip m_EngineDriving;      
-    public float m_PitchRange = 0.2f;
+    public float m_PitchRange = 0.1f;
 
     private string m_MovementAxisName;     
     private string m_TurnAxisName;
@@ -27,7 +27,6 @@ public class TankMovement : MonoBehaviour
         m_Rigidbody = GetComponentInChildren<Rigidbody>();
 		m_GunTransform = GameObject.Find("TankTop").transform;
 	}
-
 
     private void OnEnable ()
     {
@@ -59,7 +58,6 @@ public class TankMovement : MonoBehaviour
 		EngineAudio();
     }
 
-
     private void EngineAudio()
     {
         if (Mathf.Abs(m_MovementInputValue) > 0.1f || Mathf.Abs(m_TurnInputValue) > 0.1f) {
@@ -79,14 +77,12 @@ public class TankMovement : MonoBehaviour
 		}
     }
 
-
     private void FixedUpdate()
     {
 		Move();
 		Turn();
 		Aim();
     }
-
 
     private void Move()
 	{
@@ -97,7 +93,7 @@ public class TankMovement : MonoBehaviour
 
     private void Turn()
     {
-		float degree = m_TurnInputValue * m_TurnSpeed * Time.deltaTime;
+		float degree = m_TurnInputValue * m_TurnSpeed * Time.deltaTime * 0.4f;
 		Quaternion turnRotation = Quaternion.Euler(0f, degree, 0f);
 		m_Rigidbody.MoveRotation(m_Rigidbody.rotation * turnRotation);
 		m_GunTransform.Rotate(new Vector3(0f, -degree, 0f));
@@ -106,8 +102,8 @@ public class TankMovement : MonoBehaviour
 	private void Aim()
 	{
 		float pan = 0f;
-		if (m_MousePan > 0) pan = 1f;
-		else if (m_MousePan < 0) pan = -1f;
+		if (m_MousePan > 0) pan = 0.4f;
+		else if (m_MousePan < 0) pan = -0.4f;
 		m_GunTransform.Rotate(new Vector3(0f, pan * m_TurnSpeed * Time.deltaTime, 0f));
 	}
 }
