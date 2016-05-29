@@ -19,6 +19,7 @@ public class TankShooting : MonoBehaviour
     private float m_CurrentLaunchForce;         // The force that will be given to the shell when the fire button is released.
     private float m_ChargeSpeed;                // How fast the launch force increases, based on the max charge time.
     private bool m_Fired;                       // Whether or not the shell has been launched with this button press.
+    private float timer;
 
     private void OnEnable()
     {
@@ -35,6 +36,7 @@ public class TankShooting : MonoBehaviour
 
     private void Update()
     {
+        timer += Time.deltaTime;
         m_AimSlider.value = m_MinLaunchForce;
 
         if (m_CurrentLaunchForce >= m_MaxLaunchForce && !m_Fired)
@@ -42,12 +44,13 @@ public class TankShooting : MonoBehaviour
             m_CurrentLaunchForce = m_MaxLaunchForce;
             Fire();
         }
-        else if (Input.GetButtonDown(m_FireButton))
+        else if ( Input.GetButtonDown(m_FireButton) && timer > 4 )
         {
             m_Fired = false;
             m_CurrentLaunchForce = m_MinLaunchForce;
             m_ShootingAudio.clip = m_ChargingClip;
             m_ShootingAudio.Play();
+            timer = 0;
         }
         else if (Input.GetButton(m_FireButton) && !m_Fired)
         {
