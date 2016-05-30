@@ -10,6 +10,7 @@ public class AI : MonoBehaviour
 	public AudioClip m_EngineDriving;
     public GameObject TankTop;
 	public float m_PitchRange = 0.1f;
+    public GameObject playerTank;
 
 	private Rigidbody m_Rigidbody;
 	private Transform m_GunTransform;
@@ -17,18 +18,27 @@ public class AI : MonoBehaviour
 	private float updateInterval;
 	private float m_MoveDir;
 	private float m_TurnDir;
-	private float m_AimDir;
 	private float m_MoveTimer;
 	private float m_TurnTimer;
+    private float m_AimTimer;
+    private float m_OriginalPitch;
+    private Quaternion m_lookRotation;
+    private Vector3 m_direction;
 
-	private float m_OriginalPitch;
+    //firing
+    public Rigidbody m_Shell;
+    public Transform m_FireTransform;
 
+    private AudioSource m_ShootingAudio;
+    private bool m_Fired;
+    private float m_FireTimer;
 
 	private void Awake()
 	{
 		m_Rigidbody = GetComponentInChildren<Rigidbody>();
-		m_GunTransform = TankTop.transform;
-	}
+        m_ShootingAudio = GetComponentInChildren<AudioSource>();
+        m_GunTransform = TankTop.transform;
+    }
 
 	private void OnEnable()
 	{
@@ -51,7 +61,9 @@ public class AI : MonoBehaviour
 		updateInterval = Time.deltaTime;
 		m_MoveTimer -= updateInterval;
 		m_TurnTimer -= updateInterval;
-		if (m_MoveTimer < 0f)
+        m_AimTimer -= updateInterval;
+        m_FireTimer -= updateInterval;
+        if (m_MoveTimer < 0f)
 		{
 			m_MoveTimer = Mathf.Round(Random.Range(1f, 5f));
 			m_MoveDir = randomDir();
@@ -60,6 +72,12 @@ public class AI : MonoBehaviour
 			m_TurnTimer = Mathf.Round(Random.Range(1f, 5f));
 			m_TurnDir = randomDir();
 		}
+        m_direction = (playerTank.transform.position - transform.position).normalized;
+        m_lookRotation = Quaternion.LookRotation(m_direction);
+        if (m_FireTimer < 0f)
+        {
+            if (Vector3.Angle(TankTop.transform.forward, m_direction) < 10f) Fire();
+        }
 		EngineAudio();
 	}
 
@@ -120,9 +138,23 @@ public class AI : MonoBehaviour
 	private void Turn()
 	{
 		float turnDeg = m_TurnDir * m_TurnSpeed * Time.deltaTime * 0.4f;
-		float aimDeg = m_AimDir * m_TurnSpeed * Time.deltaTime * 0.4f;
 		Quaternion turnRotation = Quaternion.Euler(0f, turnDeg, 0f);
 		m_Rigidbody.MoveRotation(m_Rigidbody.rotation * turnRotation);
-		m_GunTransform.Rotate(new Vector3(0f, aimDeg - turnDeg, 0f));
-	}
+		m_GunTransform.Rotate(new Vector3(0f, -turnDeg, 0f));
+        if(m_AimTimer < 0f)
+        {
+            m_GunTransform.rotation = Quaternion.Slerp(m_GunTransform.rotation, m_lookRotation, Time.deltaTime * m_TurnSpeed);
+            m_AimTimer = Random.Range(3f, 5f);
+        }
+        
+
+    }
+    private void Fire()
+    {
+        m_FireTimer = 3;
+        Rigidbody shellInstance =
+            Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
+        shellInstance.velocity = Random.Range(15f, 30f) * m_FireTransform.forward;
+        m_ShootingAudio.Play();
+    }
 }
