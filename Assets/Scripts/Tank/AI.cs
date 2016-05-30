@@ -8,6 +8,7 @@ public class AI : MonoBehaviour
 	public AudioSource m_MovementAudio;
 	public AudioClip m_EngineIdling;
 	public AudioClip m_EngineDriving;
+    public GameObject TankTop;
 	public float m_PitchRange = 0.1f;
 
 	private Rigidbody m_Rigidbody;
@@ -26,7 +27,7 @@ public class AI : MonoBehaviour
 	private void Awake()
 	{
 		m_Rigidbody = GetComponentInChildren<Rigidbody>();
-		m_GunTransform = GameObject.Find("TankTop").transform;
+		m_GunTransform = TankTop.transform;
 	}
 
 	private void OnEnable()

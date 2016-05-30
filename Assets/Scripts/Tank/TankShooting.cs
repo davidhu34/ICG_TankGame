@@ -23,6 +23,7 @@ public class TankShooting : MonoBehaviour
     private float m_ChargeSpeed;                // How fast the launch force increases, based on the max charge time.
     private bool m_Fired;                       // Whether or not the shell has been launched with this button press.
 	private float timer;
+    private float Ttimer;
 	private bool m_Zooming;
 	private Vector3 m_ZoomIn;
 	private Vector3 m_ZoomOut;
@@ -42,19 +43,22 @@ public class TankShooting : MonoBehaviour
 		m_ToggleCamPos = "ToggleC";
         m_FireButton = "Fire" + m_PlayerNumber;
         m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
+        Ttimer = 0f;
     }
 
 
     private void Update()
     {
+        Ttimer -= Time.deltaTime;
         timer -= Time.deltaTime;
         m_AimSlider.value = m_MinLaunchForce;
 		if (m_Zooming)
 		{
-			if (Input.GetButton(m_ToggleCamPos))
+			if (Input.GetButton(m_ToggleCamPos) && Ttimer < 0)
 			{
 				m_Camera.transform.Translate(m_ZoomOut);
 				m_Zooming = false;
+                Ttimer = 1;
 			}
 			if (m_CurrentLaunchForce >= m_MaxLaunchForce && !m_Fired)
 			{
@@ -78,10 +82,11 @@ public class TankShooting : MonoBehaviour
 				Fire();
 			}
 		}
-		else if (Input.GetButton(m_ToggleCamPos))
+		else if (Input.GetButton(m_ToggleCamPos) && Ttimer < 0f)
 		{
 			m_Camera.transform.Translate(m_ZoomIn);
 			m_Zooming = true;
+            Ttimer = 1f;
 		}
 		m_CannonCD.value = timer;
     }
