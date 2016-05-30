@@ -64,7 +64,7 @@ public class GunShooting : MonoBehaviour
         shootRay.origin = transform.position;
         shootRay.direction = transform.forward;
 
-        if (Physics.Raycast(shootRay, out shootHit, range, shootableMask))
+        if (Physics.Raycast(shootRay, out shootHit, range))
         {
             gunLine.SetPosition(1, shootHit.point);
         }

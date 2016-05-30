@@ -8,6 +8,7 @@ public class TankMovement : MonoBehaviour
     public AudioClip m_EngineIdling;
     public AudioClip m_EngineDriving;
     public float m_PitchRange = 0.1f;
+	public GameObject m_TankTop;
 
     private string m_MovementAxisName;
     private string m_TurnAxisName;
@@ -26,7 +27,7 @@ public class TankMovement : MonoBehaviour
     private void Awake()
     {
         m_Rigidbody = GetComponentInChildren<Rigidbody>();
-        m_GunTransform = GameObject.Find("TankTop").transform;
+        m_GunTransform = m_TankTop.transform;
     }
 
     private void OnEnable()
