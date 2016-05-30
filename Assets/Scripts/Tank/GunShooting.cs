@@ -66,6 +66,11 @@ public class GunShooting : MonoBehaviour
 
         if (Physics.Raycast(shootRay, out shootHit, range))
         {
+			TankHealth targetHealth = shootHit.collider.GetComponent<TankHealth>();
+			if (targetHealth != null)
+			{
+				targetHealth.TakeDamage(5);
+			}
             gunLine.SetPosition(1, shootHit.point);
         }
         else
